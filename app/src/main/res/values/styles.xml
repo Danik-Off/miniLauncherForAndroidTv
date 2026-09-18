@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.MiniLauncher" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg_window</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorPrimary">@color/bg_bottom</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>

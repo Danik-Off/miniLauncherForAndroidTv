@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Focus ring with a faint outer halo: three rounded strokes, no blur. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <layer-list>
+            <item>
+                <shape>
+                    <stroke android:width="7dp" android:color="#1FFFFFFF" />
+                    <corners android:radius="@dimen/card_radius" />
+                </shape>
+            </item>
+            <item>
+                <shape>
+                    <stroke android:width="5dp" android:color="#38FFFFFF" />
+                    <corners android:radius="@dimen/card_radius" />
+                </shape>
+            </item>
+            <item>
+                <shape>
+                    <stroke android:width="3dp" android:color="@color/focus_stroke" />
+                    <corners android:radius="@dimen/card_radius" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</selector>

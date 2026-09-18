@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">Mini Launcher</string>
+    <string name="favorites">Favorites</string>
+    <string name="all_apps">All apps</string>
+    <string name="hidden_apps">Hidden</string>
+    <string name="no_apps">No apps found</string>
+    <string name="settings">Settings</string>
+
+    <string name="menu_show_hidden">Show hidden apps</string>
+    <string name="menu_hide_hidden">Hide hidden apps</string>
+    <string name="menu_default_home">Set as default home</string>
+    <string name="menu_system_settings">System settings</string>
+    <string name="menu_about">About</string>
+
+    <string name="app_open">Open</string>
+    <string name="app_favorite_add">Add to favorites</string>
+    <string name="app_favorite_remove">Remove from favorites</string>
+    <string name="app_hide">Hide</string>
+    <string name="app_unhide">Show</string>
+    <string name="app_info">App info</string>
+    <string name="app_uninstall">Uninstall</string>
+
+    <string name="err_launch">Cannot open this app</string>
+    <string name="err_no_home_settings">Press HOME on the remote and choose Mini Launcher</string>
+    <string name="about_text">Mini Launcher — a tiny home screen for Android TV.\n\nOK — open, hold OK — app menu, MENU — launcher menu.</string>
+
+    <string name="continue_watching">Continue watching</string>
+    <string name="net_wifi">Wi-Fi</string>
+    <string name="net_ethernet">Ethernet</string>
+    <string name="net_none">No network</string>
+    <string name="qa_wifi">Wi-Fi</string>
+    <string name="qa_bluetooth">Bluetooth</string>
+    <string name="qa_sound">Sound</string>
+    <string name="qa_apps">Apps</string>
+    <string name="qa_settings">Settings</string>
+    <string name="qa_power">Power off</string>
+    <string name="power_confirm">Turn off the TV?</string>
+    <string name="power_failed">This TV does not allow apps to turn it off</string>
+    <string name="menu_card_size">Card size</string>
+    <string name="size_compact">Compact</string>
+    <string name="size_normal">Normal</string>
+    <string name="size_large">Large</string>
+    <string name="menu_watch_next_enable">Enable \"Continue watching\"</string>
+    <string name="menu_watch_next_hide">Hide \"Continue watching\"</string>
+    <string name="menu_watch_next_show">Show \"Continue watching\"</string>
+    <string name="app_move_left">Move left</string>
+    <string name="app_move_right">Move right</string>
+    <string name="wn_remove">Remove from list</string>
+    <string name="wn_open_app">Open %s</string>
+</resources>

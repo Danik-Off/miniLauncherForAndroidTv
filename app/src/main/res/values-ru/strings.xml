@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">Mini Launcher</string>
+    <string name="favorites">Избранное</string>
+    <string name="all_apps">Все приложения</string>
+    <string name="hidden_apps">Скрытые</string>
+    <string name="no_apps">Приложения не найдены</string>
+    <string name="settings">Настройки</string>
+
+    <string name="menu_show_hidden">Показать скрытые</string>
+    <string name="menu_hide_hidden">Убрать скрытые</string>
+    <string name="menu_default_home">Сделать домашним экраном</string>
+    <string name="menu_system_settings">Настройки системы</string>
+    <string name="menu_about">О лаунчере</string>
+
+    <string name="app_open">Открыть</string>
+    <string name="app_favorite_add">В избранное</string>
+    <string name="app_favorite_remove">Убрать из избранного</string>
+    <string name="app_hide">Скрыть</string>
+    <string name="app_unhide">Показать</string>
+    <string name="app_info">О приложении</string>
+    <string name="app_uninstall">Удалить</string>
+
+    <string name="err_launch">Не удалось открыть приложение</string>
+    <string name="err_no_home_settings">Нажмите HOME на пульте и выберите Mini Launcher</string>
+    <string name="about_text">Mini Launcher — маленький домашний экран для Android TV.\n\nOK — открыть, удержание OK — меню приложения, MENU — меню лаунчера.</string>
+
+    <string name="continue_watching">Продолжить просмотр</string>
+    <string name="net_wifi">Wi-Fi</string>
+    <string name="net_ethernet">Ethernet</string>
+    <string name="net_none">Нет сети</string>
+    <string name="qa_wifi">Wi-Fi</string>
+    <string name="qa_bluetooth">Bluetooth</string>
+    <string name="qa_sound">Звук</string>
+    <string name="qa_apps">Приложения</string>
+    <string name="qa_settings">Настройки</string>
+    <string name="qa_power">Выключить</string>
+    <string name="power_confirm">Выключить телевизор?</string>
+    <string name="power_failed">Эта прошивка не даёт приложениям выключать ТВ</string>
+    <string name="menu_card_size">Размер карточек</string>
+    <string name="size_compact">Компактно</string>
+    <string name="size_normal">Обычно</string>
+    <string name="size_large">Крупно</string>
+    <string name="menu_watch_next_enable">Включить «Продолжить просмотр»</string>
+    <string name="menu_watch_next_hide">Скрыть «Продолжить просмотр»</string>
+    <string name="menu_watch_next_show">Показать «Продолжить просмотр»</string>
+    <string name="app_move_left">Сдвинуть влево</string>
+    <string name="app_move_right">Сдвинуть вправо</string>
+    <string name="wn_remove">Убрать из списка</string>
+    <string name="wn_open_app">Открыть %s</string>
+</resources>

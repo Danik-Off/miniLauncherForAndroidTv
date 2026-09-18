@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icon in a round button with a small caption; the caption lights up with the button. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="6dp"
+    android:clickable="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:focusable="true"
+    android:gravity="center_horizontal"
+    android:minWidth="64dp"
+    android:orientation="vertical"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:background="@drawable/round_button"
+        android:contentDescription="@null"
+        android:duplicateParentState="true"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
+        android:tint="@color/text_primary" />
+
+    <TextView
+        android:id="@+id/caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:singleLine="true"
+        android:textColor="@color/text_secondary"
+        android:textSize="10sp" />
+</LinearLayout>

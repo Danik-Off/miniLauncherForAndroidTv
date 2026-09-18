@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static window background: drawn once by the decor, costs nothing per frame. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                android:angle="315"
+                android:startColor="@color/bg_bottom"
+                android:centerColor="@color/bg_mid"
+                android:endColor="@color/bg_top" />
+        </shape>
+    </item>
+    <!-- soft accent glow behind the clock -->
+    <item>
+        <shape>
+            <gradient
+                android:type="radial"
+                android:centerX="0.12"
+                android:centerY="0.05"
+                android:gradientRadius="560dp"
+                android:startColor="@color/glow_start"
+                android:centerColor="@color/glow_mid"
+                android:endColor="#00000000" />
+        </shape>
+    </item>
+</layer-list>
