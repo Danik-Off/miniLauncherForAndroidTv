@@ -24,6 +24,25 @@
             android:layout_height="wrap_content"
             android:scaleType="centerCrop" />
 
+        <!-- Remote digit that launches this favourite -->
+        <TextView
+            android:id="@+id/badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:layout_margin="6dp"
+            android:background="@drawable/badge_bg"
+            android:fontFamily="sans-serif-medium"
+            android:minWidth="20dp"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingTop="1dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="1dp"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:visibility="gone" />
+
         <!-- Playback progress for "continue watching"; weights set in code -->
         <LinearLayout
             android:id="@+id/progress"

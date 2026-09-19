@@ -5,13 +5,13 @@
         <layer-list>
             <item>
                 <shape>
-                    <stroke android:width="7dp" android:color="#1FFFFFFF" />
+                    <stroke android:width="7dp" android:color="@color/focus_halo_outer" />
                     <corners android:radius="@dimen/card_radius" />
                 </shape>
             </item>
             <item>
                 <shape>
-                    <stroke android:width="5dp" android:color="#38FFFFFF" />
+                    <stroke android:width="5dp" android:color="@color/focus_halo_inner" />
                     <corners android:radius="@dimen/card_radius" />
                 </shape>
             </item>

@@ -1,13 +1,21 @@
 <resources>
-    <color name="bg_top">#0B0F1A</color>
-    <color name="bg_mid">#121A2C</color>
-    <color name="bg_bottom">#1B2540</color>
-    <color name="glow_start">#3D5B9DFF</color>
-    <color name="glow_mid">#145B9DFF</color>
-    <color name="card">#1F2637</color>
-    <color name="text_primary">#F5F7FB</color>
-    <color name="text_secondary">#8F99AF</color>
-    <color name="accent">#5B9DFF</color>
-    <color name="focus_stroke">#FFFFFF</color>
-    <color name="button_idle">#14FFFFFF</color>
+    <!-- Warm, low-blue palette: the launcher is mostly looked at in the evening. -->
+    <color name="bg_top">#141210</color>
+    <color name="bg_mid">#1E1A15</color>
+    <color name="bg_bottom">#2B241B</color>
+    <!-- amber glow behind the clock -->
+    <color name="glow_start">#36F0A83A</color>
+    <color name="glow_mid">#12F0A83A</color>
+    <color name="card">#2D2823</color>
+    <!-- warm off-white instead of pure white: easier on the eyes on a big panel in a dark room -->
+    <color name="text_primary">#F4ECDD</color>
+    <color name="text_secondary">#A89E8E</color>
+    <!-- amber: progress bar, dialog accent -->
+    <color name="accent">#F0A83A</color>
+    <!-- soft yellow focus ring, warmer than white -->
+    <color name="focus_stroke">#F7D48C</color>
+    <color name="focus_halo_outer">#22F0A83A</color>
+    <color name="focus_halo_inner">#40F0A83A</color>
+    <color name="button_idle">#18F4ECDD</color>
+    <color name="button_focus">#7A5A22</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.minilauncher.tv;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
@@ -41,7 +43,7 @@ final class IconLoader {
     private static final int TILE_BYTES = TILE_W * TILE_H * 2;
     private static final int ICON_SIZE = 100;
     /** Bump when the tile look changes so cached tiles on disk are re-rendered. */
-    private static final String TILE_DIR = "tiles-v3";
+    private static final String TILE_DIR = "tiles-v5";
     private static final int BLUR_W = 6;
     private static final int BLUR_H = 4;
     private static final int BLUR_MID_W = 24;
@@ -49,7 +51,10 @@ final class IconLoader {
     private static final int MEM_CACHE_BYTES = 12 * 1024 * 1024;
 
     private final PackageManager pm;
+    private final ContentResolver resolver;
     private final File diskDir;
+    /** User-chosen tile images, kept in files/ (not cache/) so the system never evicts them. */
+    private final File customDir;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "icon-loader");
@@ -65,9 +70,13 @@ final class IconLoader {
 
     IconLoader(Context context) {
         pm = context.getApplicationContext().getPackageManager();
+        resolver = context.getApplicationContext().getContentResolver();
         diskDir = new File(context.getCacheDir(), TILE_DIR);
         //noinspection ResultOfMethodCallIgnored
         diskDir.mkdirs();
+        customDir = new File(context.getFilesDir(), "custom");
+        //noinspection ResultOfMethodCallIgnored
+        customDir.mkdirs();
         deleteLegacyDir(new File(context.getCacheDir(), "tiles"));
     }
 
@@ -83,7 +92,56 @@ final class IconLoader {
     }
 
     void load(final AppInfo app, final ImageView target) {
-        load(app.cacheKey(), target, () -> render(app));
+        load(appKey(app), target, () -> render(app), null);
+    }
+
+    /** Cache key of an app tile; changes when the app updates or the user swaps its image. */
+    String appKey(AppInfo app) {
+        File custom = customFile(app.packageName);
+        return custom.exists() ? "c!" + app.packageName + "_" + custom.lastModified() : app.cacheKey();
+    }
+
+    // ---------------------------------------------------------------- custom images
+
+    File customFile(String packageName) {
+        return new File(customDir, packageName + ".jpg");
+    }
+
+    boolean hasCustom(String packageName) {
+        return customFile(packageName).exists();
+    }
+
+    /**
+     * Blocking. Re-encodes the picked file at a modest size (it may be a 20 MP photo from a
+     * camera) into our own storage; the USB drive can be removed afterwards.
+     */
+    boolean importCustom(String packageName, File source) {
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(source.getPath(), opts);
+        if (opts.outWidth <= 0 || opts.outHeight <= 0) return false;
+        int sample = 1;
+        while (opts.outWidth / (sample * 2) >= TILE_W * 2 && opts.outHeight / (sample * 2) >= TILE_H * 2) sample *= 2;
+        opts.inJustDecodeBounds = false;
+        opts.inSampleSize = sample;
+        Bitmap bitmap = BitmapFactory.decodeFile(source.getPath(), opts);
+        if (bitmap == null) return false;
+        File tmp = new File(customDir, packageName + ".tmp");
+        try (FileOutputStream out = new FileOutputStream(tmp)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 88, out);
+        } catch (IOException e) {
+            //noinspection ResultOfMethodCallIgnored
+            tmp.delete();
+            return false;
+        } finally {
+            bitmap.recycle();
+        }
+        return tmp.renameTo(customFile(packageName));
+    }
+
+    void removeCustom(String packageName) {
+        //noinspection ResultOfMethodCallIgnored
+        customFile(packageName).delete();
     }
 
     /**
@@ -95,11 +153,12 @@ final class IconLoader {
             if (fallback != null) load(fallback, target);
             return;
         }
+        // A failed download must not be cached as if it were the poster: the fallback tile is
+        // kept in memory only, so the next launch tries the network again.
         load(posterKey(item), target, () -> {
             Bitmap poster = fetchPoster(item.posterUri);
-            if (poster != null) return renderPoster(poster);
-            return fallback != null ? render(fallback) : blankTile();
-        });
+            return poster != null ? renderPoster(poster) : null;
+        }, () -> fallback != null ? render(fallback) : blankTile());
     }
 
     /** '!' can't appear in a package name, so poster keys never collide with app keys. */
@@ -110,10 +169,11 @@ final class IconLoader {
     private static final String POSTER_PREFIX = "p!";
 
     private interface Renderer {
+        /** Null means "not available right now"; the fallback is shown and nothing is cached. */
         Bitmap render();
     }
 
-    private void load(final String key, final ImageView target, final Renderer renderer) {
+    private void load(final String key, final ImageView target, final Renderer renderer, final Renderer fallback) {
         Bitmap cached = memory.get(key);
         target.setTag(key);
         if (cached != null) {
@@ -126,7 +186,11 @@ final class IconLoader {
             Bitmap bitmap = readDisk(key);
             if (bitmap == null) {
                 bitmap = renderer.render();
-                writeDisk(key, bitmap);
+                if (bitmap != null) {
+                    writeDisk(key, bitmap);
+                } else {
+                    bitmap = fallback != null ? fallback.render() : blankTile();
+                }
             }
             memory.put(key, bitmap);
             final Bitmap result = bitmap;
@@ -171,6 +235,14 @@ final class IconLoader {
     }
 
     private Bitmap render(AppInfo app) {
+        File custom = customFile(app.packageName);
+        if (custom.exists()) {
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap picked = BitmapFactory.decodeFile(custom.getPath(), opts);
+            if (picked != null) return renderPoster(picked);
+        }
+
         Bitmap bitmap = Bitmap.createBitmap(TILE_W, TILE_H, Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(bitmap);
 
@@ -206,6 +278,7 @@ final class IconLoader {
             }
             if (icon == null) icon = pm.getDefaultActivityIcon();
             drawBlurredBackdrop(canvas, icon, tileColor(app.packageName));
+            canvas.drawColor(0x2EE0A040); // warm the backdrop to match the palette
             canvas.drawColor(0x5A000000); // scrim so the icon stays the hero
             int left = (TILE_W - ICON_SIZE) / 2;
             int top = (TILE_H - ICON_SIZE) / 2;
@@ -243,8 +316,37 @@ final class IconLoader {
     private static final int POSTER_MAX_BYTES = 4 * 1024 * 1024;
     private static final int POSTER_TIMEOUT_MS = 8000;
 
-    private static Bitmap fetchPoster(String uri) {
-        if (!uri.startsWith("http://") && !uri.startsWith("https://")) return null;
+    private Bitmap fetchPoster(String uri) {
+        byte[] data;
+        if (uri.startsWith("content://")) {
+            // Some apps (RuStore, for one) serve posters through their own ContentProvider.
+            data = null;
+            try {
+                InputStream in = resolver.openInputStream(Uri.parse(uri));
+                data = in != null ? readAll(in, POSTER_MAX_BYTES) : null;
+            } catch (Exception ignored) {
+                // provider not exported to us (grants usually go to the stock launcher only)
+            }
+            if (data == null) {
+                // ...but the provider URI often just wraps a plain web URL: use that instead.
+                String wrapped = null;
+                try {
+                    wrapped = Uri.parse(uri).getQueryParameter("url");
+                } catch (Exception ignored) {
+                }
+                if (wrapped != null && (wrapped.startsWith("http://") || wrapped.startsWith("https://"))) {
+                    data = download(wrapped);
+                }
+            }
+        } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
+            data = download(uri);
+        } else {
+            return null;
+        }
+        return data != null ? decodeToTileSize(data) : null;
+    }
+
+    private static byte[] download(String uri) {
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) new URL(uri).openConnection();
@@ -252,8 +354,16 @@ final class IconLoader {
             conn.setReadTimeout(POSTER_TIMEOUT_MS);
             conn.setInstanceFollowRedirects(true);
             if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) return null;
-            byte[] data = readAll(conn.getInputStream(), POSTER_MAX_BYTES);
-            if (data == null) return null;
+            return readAll(conn.getInputStream(), POSTER_MAX_BYTES);
+        } catch (Exception e) {
+            return null;
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    private static Bitmap decodeToTileSize(byte[] data) {
+        try {
             // Decode straight to roughly tile size: a 460x690 poster never needs full resolution.
             BitmapFactory.Options opts = new BitmapFactory.Options();
             opts.inJustDecodeBounds = true;
@@ -267,8 +377,6 @@ final class IconLoader {
             return BitmapFactory.decodeByteArray(data, 0, data.length, opts);
         } catch (Exception e) {
             return null;
-        } finally {
-            if (conn != null) conn.disconnect();
         }
     }
 
@@ -329,8 +437,9 @@ final class IconLoader {
 
     /** A muted, dark hue derived from the package name so icon-only tiles don't all look the same. */
     private static int tileColor(String packageName) {
-        float hue = (packageName.hashCode() & 0xFFFF) % 360;
-        return Color.HSVToColor(new float[]{hue, 0.42f, 0.30f});
+        // Hues limited to the warm half of the wheel (red..yellow..olive), muted and dark.
+        float hue = (packageName.hashCode() & 0xFFFF) % 80;
+        return Color.HSVToColor(new float[]{hue, 0.40f, 0.30f});
     }
 
     private Bitmap readDisk(String key) {

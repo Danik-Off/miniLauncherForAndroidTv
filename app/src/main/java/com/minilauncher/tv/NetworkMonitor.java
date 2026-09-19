@@ -5,15 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
  * Shows the active network in the top bar. Purely event driven: the system tells us when the
- * connection or the RSSI changes, and we only listen while the launcher is on screen.
+ * connection, the RSSI or internet reachability changes, and we only listen while the launcher
+ * is on screen.
  */
 final class NetworkMonitor {
     private final Context context;
@@ -21,6 +27,7 @@ final class NetworkMonitor {
     private final TextView text;
     private final ConnectivityManager connectivity;
     private final WifiManager wifi;
+    private final Handler main = new Handler(Looper.getMainLooper());
     private boolean started;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -29,6 +36,9 @@ final class NetworkMonitor {
             refresh();
         }
     };
+
+    /** Reports validation ("really has internet") changes, which broadcasts don't cover. */
+    private ConnectivityManager.NetworkCallback callback;
 
     NetworkMonitor(Context context, ImageView icon, TextView text) {
         this.context = context.getApplicationContext();
@@ -47,6 +57,24 @@ final class NetworkMonitor {
         filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         context.registerReceiver(receiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && connectivity != null) {
+            callback = new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onCapabilitiesChanged(Network network, NetworkCapabilities caps) {
+                    main.post(NetworkMonitor.this::refresh);
+                }
+
+                @Override
+                public void onLost(Network network) {
+                    main.post(NetworkMonitor.this::refresh);
+                }
+            };
+            try {
+                connectivity.registerDefaultNetworkCallback(callback);
+            } catch (Exception e) {
+                callback = null;
+            }
+        }
         refresh();
     }
 
@@ -54,16 +82,25 @@ final class NetworkMonitor {
         if (!started) return;
         started = false;
         context.unregisterReceiver(receiver);
+        if (callback != null && connectivity != null) {
+            try {
+                connectivity.unregisterNetworkCallback(callback);
+            } catch (Exception ignored) {
+            }
+            callback = null;
+        }
     }
 
     @SuppressWarnings("deprecation")
     void refresh() {
+        if (!started) return;
         NetworkInfo info = connectivity != null ? connectivity.getActiveNetworkInfo() : null;
         if (info == null || !info.isConnected()) {
             icon.setImageResource(wifi != null && wifi.isWifiEnabled() ? R.drawable.ic_wifi_0 : R.drawable.ic_wifi_off);
             text.setText(R.string.net_none);
             return;
         }
+        String name;
         if (info.getType() == ConnectivityManager.TYPE_WIFI && wifi != null) {
             WifiInfo wi = wifi.getConnectionInfo();
             int level = wi != null ? WifiManager.calculateSignalLevel(wi.getRssi(), 4) : 3;
@@ -71,20 +108,27 @@ final class NetworkMonitor {
             String ssid = wi != null ? wi.getSSID() : null;
             // Without location permission Android hands back a placeholder; don't show that.
             if (ssid == null || ssid.isEmpty() || ssid.contains("unknown") || ssid.equals("0x")) {
-                text.setText(R.string.net_wifi);
+                name = context.getString(R.string.net_wifi);
             } else {
-                text.setText(ssid.replace("\"", ""));
+                name = ssid.replace("\"", "");
             }
-            return;
-        }
-        if (info.getType() == ConnectivityManager.TYPE_ETHERNET) {
+        } else if (info.getType() == ConnectivityManager.TYPE_ETHERNET) {
             icon.setImageResource(R.drawable.ic_ethernet);
-            text.setText(R.string.net_ethernet);
-            return;
+            name = context.getString(R.string.net_ethernet);
+        } else {
+            icon.setImageResource(R.drawable.ic_ethernet);
+            name = info.getTypeName() != null ? info.getTypeName() : "";
         }
-        icon.setImageResource(R.drawable.ic_ethernet);
-        CharSequence name = info.getTypeName();
-        text.setText(name != null ? name : "");
+        text.setText(hasInternet() ? name : context.getString(R.string.net_no_internet, name));
+    }
+
+    /** Connected to a router is not the same as reaching the internet; the system probes for us. */
+    private boolean hasInternet() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || connectivity == null) return true;
+        Network network = connectivity.getActiveNetwork();
+        if (network == null) return true;
+        NetworkCapabilities caps = connectivity.getNetworkCapabilities(network);
+        return caps == null || caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
     }
 
     private static int levelIcon(int level) {

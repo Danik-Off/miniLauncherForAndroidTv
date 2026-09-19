@@ -22,7 +22,9 @@
 
     <string name="err_launch">Cannot open this app</string>
     <string name="err_no_home_settings">Press HOME on the remote and choose Mini Launcher</string>
-    <string name="about_text">Mini Launcher — a tiny home screen for Android TV.\n\nOK — open, hold OK — app menu, MENU — launcher menu.</string>
+    <string name="about_text">Mini Launcher — a tiny home screen for Android TV.
+
+OK — open, hold OK — card menu, MENU — launcher menu, 1–9 — favourites, colour keys — configurable.</string>
 
     <string name="continue_watching">Continue watching</string>
     <string name="net_wifi">Wi-Fi</string>
@@ -33,9 +35,6 @@
     <string name="qa_sound">Sound</string>
     <string name="qa_apps">Apps</string>
     <string name="qa_settings">Settings</string>
-    <string name="qa_power">Power off</string>
-    <string name="power_confirm">Turn off the TV?</string>
-    <string name="power_failed">This TV does not allow apps to turn it off</string>
     <string name="menu_card_size">Card size</string>
     <string name="size_compact">Compact</string>
     <string name="size_normal">Normal</string>
@@ -47,4 +46,35 @@
     <string name="app_move_right">Move right</string>
     <string name="wn_remove">Remove from list</string>
     <string name="wn_open_app">Open %s</string>
+    <string name="menu_night_mode">Night mode</string>
+    <string name="night_auto">Auto (20:00–07:00)</string>
+    <string name="night_on">On</string>
+    <string name="night_off">Off</string>
+    <string name="wn_left">%1$s · %2$s left</string>
+    <string name="time_h_m">%1$d h %2$d min</string>
+    <string name="time_m">%1$d min</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_day">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="greeting_night">Good night</string>
+    <string name="net_no_internet">%s · no internet</string>
+    <string name="menu_channels">Recommendation rows…</string>
+    <string name="channels_none">Apps have not published any recommendations yet</string>
+    <string name="menu_large_text">Large text</string>
+    <string name="menu_color_keys">Colour keys…</string>
+    <string name="key_red">Red key</string>
+    <string name="key_green">Green key</string>
+    <string name="key_yellow">Yellow key</string>
+    <string name="key_blue">Blue key</string>
+    <string name="act_none">Nothing</string>
+    <string name="act_last_app">Last app</string>
+    <string name="act_night">Night mode on/off</string>
+    <string name="app_custom_image">Custom image…</string>
+    <string name="app_custom_image_remove">Remove custom image</string>
+    <string name="picker_title">Choose an image</string>
+    <string name="picker_up">.. (up)</string>
+    <string name="picker_empty">No images or folders here</string>
+    <string name="picker_no_storage">No USB drive or storage found</string>
+    <string name="picker_failed">Cannot read this image</string>
+    <string name="no_last_app">No app launched yet</string>
 </resources>

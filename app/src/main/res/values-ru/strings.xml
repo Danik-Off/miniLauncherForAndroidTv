@@ -22,7 +22,9 @@
 
     <string name="err_launch">Не удалось открыть приложение</string>
     <string name="err_no_home_settings">Нажмите HOME на пульте и выберите Mini Launcher</string>
-    <string name="about_text">Mini Launcher — маленький домашний экран для Android TV.\n\nOK — открыть, удержание OK — меню приложения, MENU — меню лаунчера.</string>
+    <string name="about_text">Mini Launcher — маленький домашний экран для Android TV.
+
+OK — открыть, удержание OK — меню карточки, MENU — меню лаунчера, 1–9 — избранное, цветные кнопки — настраиваются.</string>
 
     <string name="continue_watching">Продолжить просмотр</string>
     <string name="net_wifi">Wi-Fi</string>
@@ -33,9 +35,6 @@
     <string name="qa_sound">Звук</string>
     <string name="qa_apps">Приложения</string>
     <string name="qa_settings">Настройки</string>
-    <string name="qa_power">Выключить</string>
-    <string name="power_confirm">Выключить телевизор?</string>
-    <string name="power_failed">Эта прошивка не даёт приложениям выключать ТВ</string>
     <string name="menu_card_size">Размер карточек</string>
     <string name="size_compact">Компактно</string>
     <string name="size_normal">Обычно</string>
@@ -47,4 +46,35 @@
     <string name="app_move_right">Сдвинуть вправо</string>
     <string name="wn_remove">Убрать из списка</string>
     <string name="wn_open_app">Открыть %s</string>
+    <string name="menu_night_mode">Ночной режим</string>
+    <string name="night_auto">Авто (20:00–07:00)</string>
+    <string name="night_on">Включён</string>
+    <string name="night_off">Выключен</string>
+    <string name="wn_left">%1$s · осталось %2$s</string>
+    <string name="time_h_m">%1$d ч %2$d мин</string>
+    <string name="time_m">%1$d мин</string>
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_day">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+    <string name="greeting_night">Доброй ночи</string>
+    <string name="net_no_internet">%s · без интернета</string>
+    <string name="menu_channels">Ряды рекомендаций…</string>
+    <string name="channels_none">Приложения пока не опубликовали рекомендаций</string>
+    <string name="menu_large_text">Крупный текст</string>
+    <string name="menu_color_keys">Цветные кнопки…</string>
+    <string name="key_red">Красная кнопка</string>
+    <string name="key_green">Зелёная кнопка</string>
+    <string name="key_yellow">Жёлтая кнопка</string>
+    <string name="key_blue">Синяя кнопка</string>
+    <string name="act_none">Ничего</string>
+    <string name="act_last_app">Последнее приложение</string>
+    <string name="act_night">Ночной режим вкл/выкл</string>
+    <string name="app_custom_image">Своя картинка…</string>
+    <string name="app_custom_image_remove">Убрать свою картинку</string>
+    <string name="picker_title">Выберите картинку</string>
+    <string name="picker_up">.. (наверх)</string>
+    <string name="picker_empty">Здесь нет картинок и папок</string>
+    <string name="picker_no_storage">Не найдено USB-накопителя или хранилища</string>
+    <string name="picker_failed">Не удалось прочитать картинку</string>
+    <string name="no_last_app">Ещё ничего не запускали</string>
 </resources>

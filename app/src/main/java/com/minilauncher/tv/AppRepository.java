@@ -28,10 +28,29 @@ final class AppRepository {
     private static final String KEY_CARD_SIZE = "card_size";
     private static final String KEY_WATCH_NEXT_HIDDEN = "watch_next_hidden";
     private static final String KEY_TV_PERMISSION_ASKED = "tv_permission_asked";
+    private static final String KEY_NIGHT_MODE = "night_mode";
+    private static final String KEY_LAST_APP = "last_app";
+    private static final String KEY_LARGE_TEXT = "large_text";
+    private static final String KEY_CHANNELS = "channels";
+    private static final String KEY_COLOR_KEY = "color_key_"; // + index 0..3
 
     static final int SIZE_COMPACT = 0;
     static final int SIZE_NORMAL = 1;
     static final int SIZE_LARGE = 2;
+
+    static final int NIGHT_AUTO = 0;
+    static final int NIGHT_ON = 1;
+    static final int NIGHT_OFF = 2;
+
+    /** Actions assignable to the remote's coloured keys; index is what gets stored. */
+    static final int ACT_NONE = 0;
+    static final int ACT_LAST_APP = 1;
+    static final int ACT_WIFI = 2;
+    static final int ACT_BLUETOOTH = 3;
+    static final int ACT_SOUND = 4;
+    static final int ACT_SETTINGS = 5;
+    static final int ACT_NIGHT = 6;
+    private static final int[] COLOR_KEY_DEFAULTS = {ACT_SETTINGS, ACT_LAST_APP, ACT_WIFI, ACT_NIGHT};
 
     private final Context context;
     private final SharedPreferences prefs;
@@ -154,12 +173,54 @@ final class AppRepository {
         prefs.edit().putInt(KEY_CARD_SIZE, size).apply();
     }
 
+    int getNightMode() {
+        return prefs.getInt(KEY_NIGHT_MODE, NIGHT_AUTO);
+    }
+
+    void setNightMode(int mode) {
+        prefs.edit().putInt(KEY_NIGHT_MODE, mode).apply();
+    }
+
     boolean isWatchNextHidden() {
         return prefs.getBoolean(KEY_WATCH_NEXT_HIDDEN, false);
     }
 
     void setWatchNextHidden(boolean hidden) {
         prefs.edit().putBoolean(KEY_WATCH_NEXT_HIDDEN, hidden).apply();
+    }
+
+    String getLastApp() {
+        return prefs.getString(KEY_LAST_APP, null);
+    }
+
+    void setLastApp(String packageName) {
+        prefs.edit().putString(KEY_LAST_APP, packageName).apply();
+    }
+
+    boolean isLargeText() {
+        return prefs.getBoolean(KEY_LARGE_TEXT, false);
+    }
+
+    void setLargeText(boolean large) {
+        prefs.edit().putBoolean(KEY_LARGE_TEXT, large).apply();
+    }
+
+    /** Ids of the recommendation channels the user switched on. */
+    Set<String> getEnabledChannels() {
+        return getSet(KEY_CHANNELS);
+    }
+
+    void setEnabledChannels(Set<String> ids) {
+        prefs.edit().putStringSet(KEY_CHANNELS, new HashSet<>(ids)).apply();
+    }
+
+    /** @param key 0 red, 1 green, 2 yellow, 3 blue */
+    int getColorKeyAction(int key) {
+        return prefs.getInt(KEY_COLOR_KEY + key, COLOR_KEY_DEFAULTS[key]);
+    }
+
+    void setColorKeyAction(int key, int action) {
+        prefs.edit().putInt(KEY_COLOR_KEY + key, action).apply();
     }
 
     boolean wasTvPermissionAsked() {
