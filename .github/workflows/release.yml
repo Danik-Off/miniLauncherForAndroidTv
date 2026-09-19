@@ -23,6 +23,9 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # The wrapper was committed from Windows, where git can't record the executable bit.
+      - run: chmod +x gradlew
+
       - name: Version from tag
         id: version
         run: |
