@@ -66,6 +66,42 @@ APK ~75 КБ, ~12 МБ живой памяти, 0 % CPU в простое.
 
 APK: `app/build/outputs/apk/release/app-release.apk` (подписан debug-ключом, ставится через adb).
 
+## Релиз
+
+Сборка и публикация автоматизированы через GitHub Actions:
+
+- **CI** ([.github/workflows/ci.yml](.github/workflows/ci.yml)) — на каждый push/PR собирает APK
+  и прикладывает его артефактом (14 дней).
+- **Release** ([.github/workflows/release.yml](.github/workflows/release.yml)) — по тегу `v*`
+  собирает APK, подписанный релизным ключом, и создаёт GitHub Release с файлом
+  `MiniLauncher-X.Y.Z.apk` и списком коммитов с прошлого тега.
+
+Выпустить версию:
+
+```
+git tag v1.1.0
+git push origin v1.1.0
+```
+
+`versionName` берётся из тега, `versionCode` — число коммитов до него (всегда растёт).
+
+### Ключ подписи
+
+Локально ключ лежит в `keystore/release.jks` + `keystore/keystore.properties` (оба в `.gitignore`,
+см. [keystore/README.md](keystore/README.md)). Без них `assembleRelease` подписывает debug-ключом.
+
+Для CI добавьте в **Settings → Secrets and variables → Actions** четыре секрета:
+
+| Секрет | Значение |
+|---|---|
+| `KEYSTORE_BASE64` | `base64 -w0 keystore/release.jks` (PowerShell: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("keystoreelease.jks"))`) |
+| `KEYSTORE_PASSWORD` | из `keystore.properties` |
+| `KEY_ALIAS` | `minilauncher` |
+| `KEY_PASSWORD` | из `keystore.properties` |
+
+Если секретов нет, релиз всё равно соберётся, но с debug-подписью (об этом будет написано в заметках релиза).
+Ключ **не теряйте**: APK с другим ключом не встанет поверх установленного без удаления.
+
 ## Установка на ТВ
 
 ```

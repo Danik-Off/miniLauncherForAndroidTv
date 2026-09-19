@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Debug-signed release build: same bytes as a real release, just the test key.
+      - name: Build
+        run: ./gradlew assembleRelease lintVitalRelease --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MiniLauncher-ci-${{ github.sha }}
+          path: app/build/outputs/apk/release/app-release.apk
+          retention-days: 14
